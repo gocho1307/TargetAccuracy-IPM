@@ -15,7 +15,7 @@ const NUM_OF_TRIALS = 12; // The numbers of trials (i.e., target selections) to 
 const GRID_ROWS = 8; // We divide our 80 targets in a 8x10 grid
 const GRID_COLUMNS = 10; // We divide our 80 targets in a 8x10 grid
 let continue_button;
-let legendas; // The item list from the "legendas" CSV
+let labels; // The item list from the "labels" CSV
 
 // Metrics
 let testStartTime, testEndTime; // time between the start and end of one attempt (8 trials)
@@ -34,7 +34,7 @@ let targets = [];
 
 // Ensures important data is loaded before the program starts
 function preload() {
-  legendas = loadTable('legendas.csv', 'csv', 'header');
+  labels = loadTable("./assets/labels.csv", "csv", "header");
 }
 
 // Runs once at the start
@@ -53,18 +53,18 @@ function draw() {
     background(color(0, 0, 0)); // sets background to black
 
     // Print trial count at the top left-corner of the canvas
-    textFont('Arial', 16);
+    textFont("Arial", 16);
     fill(color(255, 255, 255));
     textAlign(LEFT);
-    text('Trial ' + (current_trial + 1) + ' of ' + trials.length, 50, 20);
+    text("Trial " + (current_trial + 1) + " of " + trials.length, 50, 20);
 
     // Draw all targets
-    for (var i = 0; i < legendas.getRowCount(); i++) targets[i].draw();
+    for (var i = 0; i < labels.getRowCount(); i++) targets[i].draw();
 
     // Draw the target label to be selected in the current trial
-    textFont('Arial', 20);
+    textFont("Arial", 20);
     textAlign(CENTER);
-    text(legendas.getString(trials[current_trial], 0), width / 2, height - 20);
+    text(labels.getString(trials[current_trial], 0), width / 2, height - 20);
   }
 }
 
@@ -79,24 +79,42 @@ function printAndSavePerformance() {
     0,
     100
   );
-  let target_w_penalty = nf(test_time / parseFloat(hits + misses) + penalty, 0, 3);
+  let target_w_penalty = nf(
+    test_time / parseFloat(hits + misses) + penalty,
+    0,
+    3
+  );
   let timestamp =
-    day() + '/' + month() + '/' + year() + '  ' + hour() + ':' + minute() + ':' + second();
+    day() +
+    "/" +
+    month() +
+    "/" +
+    year() +
+    "  " +
+    hour() +
+    ":" +
+    minute() +
+    ":" +
+    second();
 
-  textFont('Arial', 18);
+  textFont("Arial", 18);
   background(color(0, 0, 0)); // clears screen
   fill(color(255, 255, 255)); // set text fill color to white
   textAlign(LEFT);
   text(timestamp, 10, 20); // display time on screen (top-left corner)
 
   textAlign(CENTER);
-  text('Attempt ' + (attempt + 1) + ' out of 2 completed!', width / 2, 60);
-  text('Hits: ' + hits, width / 2, 100);
-  text('Misses: ' + misses, width / 2, 120);
-  text('Accuracy: ' + accuracy + '%', width / 2, 140);
-  text('Total time taken: ' + test_time + 's', width / 2, 160);
-  text('Average time per target: ' + time_per_target + 's', width / 2, 180);
-  text('Average time for each target (+ penalty): ' + target_w_penalty + 's', width / 2, 220);
+  text("Attempt " + (attempt + 1) + " out of 2 completed!", width / 2, 60);
+  text("Hits: " + hits, width / 2, 100);
+  text("Misses: " + misses, width / 2, 120);
+  text("Accuracy: " + accuracy + "%", width / 2, 140);
+  text("Total time taken: " + test_time + "s", width / 2, 160);
+  text("Average time per target: " + time_per_target + "s", width / 2, 180);
+  text(
+    "Average time for each target (+ penalty): " + target_w_penalty + "s",
+    width / 2,
+    220
+  );
 
   // Saves results (DO NOT CHANGE!)
   let attempt_data = {
@@ -121,7 +139,7 @@ function printAndSavePerformance() {
     }
 
     // Add user performance results
-    let db_ref = database.ref('G' + GROUP_NUMBER);
+    let db_ref = database.ref("G" + GROUP_NUMBER);
     db_ref.push(attempt_data);
   }
 }
@@ -131,7 +149,7 @@ function mousePressed() {
   // Only look for mouse releases during the actual test
   // (i.e., during target selections)
   if (draw_targets) {
-    for (var i = 0; i < legendas.getRowCount(); i++) {
+    for (var i = 0; i < labels.getRowCount(); i++) {
       // Check if the user clicked over one of the targets
       if (targets[i].clicked(mouseX, mouseY)) {
         // Checks if it was the correct target
@@ -152,7 +170,7 @@ function mousePressed() {
 
       // If there's an attempt to go create a button to start this
       if (attempt < 2) {
-        continue_button = createButton('START 2ND ATTEMPT');
+        continue_button = createButton("START 2ND ATTEMPT");
         continue_button.mouseReleased(continueTest);
         continue_button.position(
           width / 2 - continue_button.size().width / 2,
@@ -195,11 +213,17 @@ function createTargets(target_size, horizontal_gap, vertical_gap) {
       let target_y = (v_margin + target_size) * r + target_size / 2;
 
       // Find the appropriate label and ID for this target
-      let legendas_index = c + GRID_COLUMNS * r;
-      let target_label = legendas.getString(legendas_index, 0);
-      let target_id = legendas.getNum(legendas_index, 1);
+      let labels_index = c + GRID_COLUMNS * r;
+      let target_label = labels.getString(labels_index, 0);
+      let target_id = labels.getNum(labels_index, 1);
 
-      let target = new Target(target_x, target_y + 40, target_size, target_label, target_id);
+      let target = new Target(
+        target_x,
+        target_y + 40,
+        target_size,
+        target_label,
+        target_id
+      );
       targets.push(target);
     }
   }
@@ -224,7 +248,11 @@ function windowResized() {
 
     // Creates and positions the UI targets according to the white space defined above (in cm!)
     // 80 represent some margins around the display (e.g., for text)
-    createTargets(target_size * PPCM, horizontal_gap * PPCM - 80, vertical_gap * PPCM - 80);
+    createTargets(
+      target_size * PPCM,
+      horizontal_gap * PPCM - 80,
+      vertical_gap * PPCM - 80
+    );
 
     // Starts drawing targets immediately after we go fullscreen
     draw_targets = true;
