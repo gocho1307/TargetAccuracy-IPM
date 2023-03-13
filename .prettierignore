@@ -1,0 +1,4 @@
+# Ignore artifacts:
+src/firebase.js
+src/p5.js
+src/p5.sound.min.js
