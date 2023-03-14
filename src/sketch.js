@@ -4,16 +4,16 @@
 // Bake-off: during the laboratories of the week of April 10th
 
 // Database (CHANGE THESE!)
-const GROUP_NUMBER = 84; // Add your group number here as an integer (e.g., 2, 3)
-const RECORD_TO_FIREBASE = false; // Set to 'true' to record user results to Firebase
+const GROUP_NUMBER = 84; // add your group number here as an integer (e.g., 2, 3)
+const RECORD_TO_FIREBASE = false; // set to 'true' to record user results to Firebase
 
 // Pixel density and setup variables (DO NOT CHANGE!)
 let PPI, PPCM;
-const NUM_OF_TRIALS = 12; // The numbers of trials (i.e., target selections) to be completed
-const GRID_ROWS = 8; // We divide our 80 targets in a 8x10 grid
-const GRID_COLUMNS = 10; // We divide our 80 targets in a 8x10 grid
+const NUM_OF_TRIALS = 12; // the numbers of trials (i.e., target selections) to be completed
+const GRID_ROWS = 8; // we divide our 80 targets in a 8x10 grid (8 rows)
+const GRID_COLUMNS = 10; // we divide our 80 targets in a 8x10 grid (10 columns)
 let continue_button;
-let labels; // The item list from the "labels" CSV
+let labels; // the item list from the "labels" CSV
 
 // Metrics
 let testStartTime, testEndTime; // time between the start and end of one attempt (8 trials)
@@ -27,12 +27,21 @@ let trials; // contains the order of targets that activate in the test
 let current_trial = 0; // the current trial number (indexes into trials array above)
 let attempt = 0; // users complete each test twice to account for practice (attemps 0 and 1)
 
+// Sound
+let hit_sound; // sound when users hit a target
+let miss_sound; // sound when users miss a target
+
+// Other variables
+let new_background_color; // used to set the background color when misses or hits occur
+
 // Target list
 let targets = [];
 
 // Ensures important data is loaded before the program starts
 function preload() {
   labels = loadTable('./assets/labels.csv', 'csv', 'header');
+  hit_sound = loadSound('./assets/hit.wav');
+  miss_sound = loadSound('./assets/miss.wav');
 }
 
 // Runs once at the start
@@ -47,8 +56,8 @@ function setup() {
 // Runs every frame and redraws the screen
 function draw() {
   if (draw_targets && attempt < 2) {
-    // The user is interacting with the 6x3 target grid
-    background(color(0, 0, 0)); // sets background to black
+    // The user is interacting with the 8x10 target grid
+    background(new_background_color || color(0, 0, 0)); // sets background color
 
     // Print trial count at the top left-corner of the canvas
     textFont('Arial', 16);
@@ -57,7 +66,9 @@ function draw() {
     text('Trial ' + (current_trial + 1) + ' of ' + trials.length, 50, 20);
 
     // Draw all targets
-    for (var i = 0; i < labels.getRowCount(); i++) targets[i].draw();
+    for (var i = 0; i < labels.getRowCount(); i++) {
+      targets[i].draw();
+    }
 
     // Draw the target label to be selected in the current trial
     textFont('Arial', 20);
@@ -66,7 +77,7 @@ function draw() {
   }
 }
 
-// Print and save results at the end of 54 trials
+// Print and save results at the end of 12 trials
 function printAndSavePerformance() {
   // DO NOT CHANGE THESE!
   let accuracy = parseFloat(hits * 100) / parseFloat(hits + misses);
@@ -133,10 +144,19 @@ function mousePressed() {
       // Check if the user clicked over one of the targets
       if (targets[i].clicked(mouseX, mouseY)) {
         // Checks if it was the correct target
-        if (targets[i].id === trials[current_trial]) hits++;
-        else misses++;
+        if (targets[i].id === trials[current_trial]) {
+          hit_sound.setVolume(0.2);
+          hit_sound.play();
+          new_background_color = color(0, 25, 0);
+          hits++;
+        } else {
+          miss_sound.setVolume(0.2);
+          miss_sound.play();
+          new_background_color = color(25, 0, 0);
+          misses++;
+        }
 
-        current_trial++; // Move on to the next trial/target
+        current_trial++; // move on to the next trial/target
         break;
       }
     }
@@ -144,8 +164,8 @@ function mousePressed() {
     // Check if the user has completed all trials
     if (current_trial === NUM_OF_TRIALS) {
       testEndTime = millis();
-      draw_targets = false; // Stop showing targets and the user performance results
-      printAndSavePerformance(); // Print the user's results on-screen and send these to the DB
+      draw_targets = false; // stop showing targets and the user performance results
+      printAndSavePerformance(); // print the user's results on-screen and send these to the DB
       attempt++;
 
       // If there's an attempt to go create a button to start this
@@ -159,7 +179,9 @@ function mousePressed() {
       }
     }
     // Check if this was the first selection in an attempt
-    else if (current_trial === 1) testStartTime = millis();
+    else if (current_trial === 1) {
+      testStartTime = millis();
+    }
   }
 }
 
@@ -176,6 +198,7 @@ function continueTest() {
   continue_button.remove();
 
   // Shows the targets again
+  new_background_color = color(0, 0, 0);
   draw_targets = true;
 }
 
