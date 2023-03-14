@@ -1,9 +1,7 @@
-// Bakeoff #2 -- Seleção em Interfaces Densas
-// IPM 2022-23, Período 3
-// Entrega: até dia 31 de Março às 23h59 através do Fenix
-// Bake-off: durante os laboratórios da semana de 10 de Abril
-
-// p5.js reference: https://p5js.org/reference/
+// Bake-off #2 -- Selection in Dense Interfaces
+// IPM 2022-23, 3rd Period
+// Deadline: until March 31st at 23h59m through Fénix
+// Bake-off: during the laboratories of the week of April 10th
 
 // Database (CHANGE THESE!)
 const GROUP_NUMBER = 84; // Add your group number here as an integer (e.g., 2, 3)
@@ -15,7 +13,7 @@ const NUM_OF_TRIALS = 12; // The numbers of trials (i.e., target selections) to 
 const GRID_ROWS = 8; // We divide our 80 targets in a 8x10 grid
 const GRID_COLUMNS = 10; // We divide our 80 targets in a 8x10 grid
 let continue_button;
-let legendas; // The item list from the "legendas" CSV
+let labels; // The item list from the "labels" CSV
 
 // Metrics
 let testStartTime, testEndTime; // time between the start and end of one attempt (8 trials)
@@ -34,7 +32,7 @@ let targets = [];
 
 // Ensures important data is loaded before the program starts
 function preload() {
-  legendas = loadTable('legendas.csv', 'csv', 'header');
+  labels = loadTable('./assets/labels.csv', 'csv', 'header');
 }
 
 // Runs once at the start
@@ -59,12 +57,12 @@ function draw() {
     text('Trial ' + (current_trial + 1) + ' of ' + trials.length, 50, 20);
 
     // Draw all targets
-    for (var i = 0; i < legendas.getRowCount(); i++) targets[i].draw();
+    for (var i = 0; i < labels.getRowCount(); i++) targets[i].draw();
 
     // Draw the target label to be selected in the current trial
     textFont('Arial', 20);
     textAlign(CENTER);
-    text(legendas.getString(trials[current_trial], 0), width / 2, height - 20);
+    text(labels.getString(trials[current_trial], 0), width / 2, height - 20);
   }
 }
 
@@ -131,7 +129,7 @@ function mousePressed() {
   // Only look for mouse releases during the actual test
   // (i.e., during target selections)
   if (draw_targets) {
-    for (var i = 0; i < legendas.getRowCount(); i++) {
+    for (var i = 0; i < labels.getRowCount(); i++) {
       // Check if the user clicked over one of the targets
       if (targets[i].clicked(mouseX, mouseY)) {
         // Checks if it was the correct target
@@ -195,9 +193,9 @@ function createTargets(target_size, horizontal_gap, vertical_gap) {
       let target_y = (v_margin + target_size) * r + target_size / 2;
 
       // Find the appropriate label and ID for this target
-      let legendas_index = c + GRID_COLUMNS * r;
-      let target_label = legendas.getString(legendas_index, 0);
-      let target_id = legendas.getNum(legendas_index, 1);
+      let labels_index = c + GRID_COLUMNS * r;
+      let target_label = labels.getString(labels_index, 0);
+      let target_id = labels.getNum(labels_index, 1);
 
       let target = new Target(target_x, target_y + 40, target_size, target_label, target_id);
       targets.push(target);
