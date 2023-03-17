@@ -55,9 +55,10 @@ function setup() {
 
 // Runs every frame and redraws the screen
 function draw() {
+  // The user is interacting with the 8x10 target grid
   if (draw_targets && attempt < 2) {
-    // The user is interacting with the 8x10 target grid
-    background(new_background_color || color(0, 0, 0)); // sets background color
+    // Sets the background color (black by default)
+    background(new_background_color || color(0, 0, 0));
 
     // Print trial count at the top left-corner of the canvas
     textFont('Arial', 16);
@@ -66,14 +67,124 @@ function draw() {
     text('Trial ' + (current_trial + 1) + ' of ' + trials.length, 50, 20);
 
     // Draw all targets
-    for (var i = 0; i < labels.getRowCount(); i++) {
-      targets[i].draw();
+    for (let i = 0; i < labels.getRowCount(); i++) {
+      targets[i].draw(mouseX, mouseY);
     }
 
     // Draw the target label to be selected in the current trial
     textFont('Arial', 20);
     textAlign(CENTER);
     text(labels.getString(trials[current_trial], 0), width / 2, height - 20);
+  }
+}
+
+// Is invoked when the canvas is resized (e.g., when we go fullscreen)
+function windowResized() {
+  if (fullscreen()) {
+    // DO NOT CHANGE THESE!
+    resizeCanvas(windowWidth, windowHeight);
+    let display = new Display({ diagonal: display_size }, window.screen);
+    PPI = display.ppi; // calculates pixels per inch
+    PPCM = PPI / 2.54; // calculates pixels per cm
+
+    // Make your decisions in 'cm', so that targets have the same size for all participants
+    // Below we find out out white space we can have between 2 cm targets
+    let screen_width = display.width * 2.54; // screen width
+    let screen_height = display.height * 2.54; // screen height
+    let target_size = 2; // sets the target size (will be converted to cm when passed to createTargets)
+    let horizontal_gap = screen_width - target_size * GRID_COLUMNS; // empty space in cm across the x-axis (based on 10 targets per row)
+    let vertical_gap = screen_height - target_size * GRID_ROWS; // empty space in cm across the y-axis (based on 8 targets per column)
+
+    // Creates and positions the UI targets according to the white space defined above (in cm!)
+    // 80 represent some margins around the display (e.g., for text)
+    if (targets.length < labels.getRowCount()) {
+      createTargets(target_size * PPCM, horizontal_gap * PPCM - 80, vertical_gap * PPCM - 80);
+    }
+
+    // Starts drawing targets immediately after we go fullscreen
+    draw_targets = true;
+  }
+}
+
+// Creates and positions the UI targets
+function createTargets(target_size, horizontal_gap, vertical_gap) {
+  // Define the margins between targets by dividing the white space
+  // for the number of targets minus one
+  h_margin = horizontal_gap / (GRID_COLUMNS - 1);
+  v_margin = vertical_gap / (GRID_ROWS - 1);
+
+  // Set targets in a 8 x 10 grid
+  for (let r = 0; r < GRID_ROWS; r++) {
+    for (let c = 0; c < GRID_COLUMNS; c++) {
+      let target_x = 40 + (h_margin + target_size) * c + target_size / 2; // give it some margin from the left border
+      let target_y = (v_margin + target_size) * r + target_size / 2;
+
+      // Find the appropriate label and ID for this target
+      let labels_index = c + GRID_COLUMNS * r;
+      let target_label = labels.getString(labels_index, 0);
+      let target_id = labels.getNum(labels_index, 1);
+      let target_type = labels.getString(labels_index, 2);
+
+      let target = new Target(
+        target_x,
+        target_y + 40,
+        target_size,
+        target_label,
+        target_id,
+        target_type
+      );
+      targets.push(target);
+    }
+  }
+}
+
+// Mouse button was pressed - lets test to see if hit was in the correct target
+function mousePressed() {
+  // Only look for mouse releases during the actual test
+  // (i.e., during target selections)
+  if (draw_targets) {
+    for (let i = 0; i < labels.getRowCount(); i++) {
+      // Check if the user selected one of the targets
+      if (targets[i].isHovering(mouseX, mouseY)) {
+        targets[i].select();
+        // Checks if it was the correct target
+        if (targets[i].id === trials[current_trial]) {
+          hit_sound.setVolume(0.2);
+          hit_sound.play();
+          new_background_color = color(0, 25, 0);
+          hits++;
+        } else {
+          miss_sound.setVolume(0.2);
+          miss_sound.play();
+          new_background_color = color(25, 0, 0);
+          misses++;
+        }
+
+        current_trial++; // move on to the next trial/target
+        break;
+      }
+    }
+
+    // Check if the user has completed all trials
+    if (current_trial === NUM_OF_TRIALS) {
+      testEndTime = millis();
+      draw_targets = false; // stop showing targets and the user performance results
+      printAndSavePerformance(); // print the user's results on-screen and send these to the DB
+      attempt++;
+
+      // If there's an attempt to go create a button to start this
+      if (attempt < 2) {
+        continue_button = createButton('START 2ND ATTEMPT');
+        continue_button.mouseReleased(continueTest);
+        continue_button.position(
+          width / 2 - continue_button.size().width / 2,
+          height / 2 - continue_button.size().height / 2
+        );
+      }
+    } else if (current_trial === 1) {
+      // Check if this was the first selection in an attempt
+      testStartTime = millis();
+    }
   }
 }
 
@@ -135,56 +246,6 @@ function printAndSavePerformance() {
   }
 }
 
-// Mouse button was pressed - lets test to see if hit was in the correct target
-function mousePressed() {
-  // Only look for mouse releases during the actual test
-  // (i.e., during target selections)
-  if (draw_targets) {
-    for (var i = 0; i < labels.getRowCount(); i++) {
-      // Check if the user clicked over one of the targets
-      if (targets[i].clicked(mouseX, mouseY)) {
-        // Checks if it was the correct target
-        if (targets[i].id === trials[current_trial]) {
-          hit_sound.setVolume(0.2);
-          hit_sound.play();
-          new_background_color = color(0, 25, 0);
-          hits++;
-        } else {
-          miss_sound.setVolume(0.2);
-          miss_sound.play();
-          new_background_color = color(25, 0, 0);
-          misses++;
-        }
-
-        current_trial++; // move on to the next trial/target
-        break;
-      }
-    }
-
-    // Check if the user has completed all trials
-    if (current_trial === NUM_OF_TRIALS) {
-      testEndTime = millis();
-      draw_targets = false; // stop showing targets and the user performance results
-      printAndSavePerformance(); // print the user's results on-screen and send these to the DB
-      attempt++;
-
-      // If there's an attempt to go create a button to start this
-      if (attempt < 2) {
-        continue_button = createButton('START 2ND ATTEMPT');
-        continue_button.mouseReleased(continueTest);
-        continue_button.position(
-          width / 2 - continue_button.size().width / 2,
-          height / 2 - continue_button.size().height / 2
-        );
-      }
-    }
-    // Check if this was the first selection in an attempt
-    else if (current_trial === 1) {
-      testStartTime = millis();
-    }
-  }
-}
-
 // Evoked after the user starts its second (and last) attempt
 function continueTest() {
   // Re-randomize the trial order
@@ -194,60 +255,15 @@ function continueTest() {
   hits = 0;
   misses = 0;
 
+  // Resets the targets information exclusive to the first attempt
+  for (let i = 0; i < labels.getRowCount(); i++) {
+    targets[i].reset();
+  }
+
   current_trial = 0;
   continue_button.remove();
 
   // Shows the targets again
   new_background_color = color(0, 0, 0);
   draw_targets = true;
-}
-
-// Creates and positions the UI targets
-function createTargets(target_size, horizontal_gap, vertical_gap) {
-  // Define the margins between targets by dividing the white space
-  // for the number of targets minus one
-  h_margin = horizontal_gap / (GRID_COLUMNS - 1);
-  v_margin = vertical_gap / (GRID_ROWS - 1);
-
-  // Set targets in a 8 x 10 grid
-  for (var r = 0; r < GRID_ROWS; r++) {
-    for (var c = 0; c < GRID_COLUMNS; c++) {
-      let target_x = 40 + (h_margin + target_size) * c + target_size / 2; // give it some margin from the left border
-      let target_y = (v_margin + target_size) * r + target_size / 2;
-
-      // Find the appropriate label and ID for this target
-      let labels_index = c + GRID_COLUMNS * r;
-      let target_label = labels.getString(labels_index, 0);
-      let target_id = labels.getNum(labels_index, 1);
-
-      let target = new Target(target_x, target_y + 40, target_size, target_label, target_id);
-      targets.push(target);
-    }
-  }
-}
-
-// Is invoked when the canvas is resized (e.g., when we go fullscreen)
-function windowResized() {
-  if (fullscreen()) {
-    // DO NOT CHANGE THESE!
-    resizeCanvas(windowWidth, windowHeight);
-    let display = new Display({ diagonal: display_size }, window.screen);
-    PPI = display.ppi; // calculates pixels per inch
-    PPCM = PPI / 2.54; // calculates pixels per cm
-
-    // Make your decisions in 'cm', so that targets have the same size for all participants
-    // Below we find out out white space we can have between 2 cm targets
-    let screen_width = display.width * 2.54; // screen width
-    let screen_height = display.height * 2.54; // screen height
-    let target_size = 2; // sets the target size (will be converted to cm when passed to createTargets)
-    let horizontal_gap = screen_width - target_size * GRID_COLUMNS; // empty space in cm across the x-axis (based on 10 targets per row)
-    let vertical_gap = screen_height - target_size * GRID_ROWS; // empty space in cm across the y-axis (based on 8 targets per column)
-
-    // Creates and positions the UI targets according to the white space defined above (in cm!)
-    // 80 represent some margins around the display (e.g., for text)
-    createTargets(target_size * PPCM, horizontal_gap * PPCM - 80, vertical_gap * PPCM - 80);
-
-    // Starts drawing targets immediately after we go fullscreen
-    draw_targets = true;
-  }
 }
