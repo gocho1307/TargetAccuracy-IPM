@@ -16,7 +16,7 @@ function drawUserIDScreen() {
   // 1. Student ID
   let student_ID_pos_y_offset = main_text.size().height + 40; // y offset from previous item
 
-  student_ID_form = createInput(''); // create input field
+  student_ID_form = createInput('103124'); // create input field
   student_ID_form.position(200, student_ID_pos_y_offset);
 
   student_ID_label = createDiv('Student number (int)'); // create label
@@ -26,7 +26,7 @@ function drawUserIDScreen() {
   // 2. Display size
   let display_size_pos_y_offset = student_ID_pos_y_offset + student_ID_form.size().height + 20;
 
-  display_size_form = createInput(''); // create input field
+  display_size_form = createInput('15'); // create input field
   display_size_form.position(200, display_size_pos_y_offset);
 
   display_size_label = createDiv('Display size in inches'); // create label

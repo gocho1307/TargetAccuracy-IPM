@@ -1,6 +1,6 @@
-// Target class: represents a target with label, position, dimensions, etc
+// Target class: represents a target with label, position, dimensions, etc.
 class Target {
-  constructor(x, y, w, l, id, c) {
+  constructor(x, y, w, l, id, t, c) {
     this.x = x;
     this.y = y;
     this.width = w;
@@ -20,7 +20,7 @@ class Target {
     this.was_selected = true;
   }
 
-  // Resets the target selection between attempts
+  // Resets the target information exclusive to the first attempt
   reset() {
     this.was_selected = false;
   }
@@ -28,17 +28,18 @@ class Target {
   // Draws the target (i.e., a circle)
   // and its label
   draw(mouse_x, mouse_y) {
-    // Draw a selection on selection or if the mouse is hovering the target
+    // Change the alpha of the target when a mouse is hovering it
     if (this.isHovering(mouse_x, mouse_y)) {
-      stroke(color(255, 255, 255));
-      strokeWeight(4);
-    } else if (this.was_selected) {
-      stroke(color(17, 170, 170));
-      strokeWeight(4);
+      this.color[3] = 75;
+    }
+    // Draw a selection if the target was selected
+    if (this.was_selected) {
+      stroke(color(150, 75));
+      strokeWeight(10);
     }
 
     // Draw target
-    fill(color(155, 155, 155));
+    fill(color(this.color));
     circle(this.x, this.y, this.width);
     noStroke();
 
@@ -46,6 +47,7 @@ class Target {
     textFont('Arial', 12);
     fill(color(255, 255, 255));
     textAlign(CENTER);
-    text(this.label, this.x, this.y);
+    text(this.label, this.x, this.y + this.width / 2 + 10);
+    this.color[3] = 100;
   }
 }

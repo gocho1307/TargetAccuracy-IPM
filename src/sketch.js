@@ -28,11 +28,56 @@ let current_trial = 0; // the current trial number (indexes into trials array ab
 let attempt = 0; // users complete each test twice to account for practice (attemps 0 and 1)
 
 // Sound
-let hit_sound; // sound when users hit a target
-let miss_sound; // sound when users miss a target
+let hit_sound;
+let miss_sound;
 
 // Other variables
-let new_background_color; // used to set the background color when misses or hits occur
+let missed;
+let target_colors = {
+  Apple: [255, 65, 54, 100],
+  Avocado: [46, 204, 64, 100],
+  Banana: [255, 220, 0, 100],
+  Kiwi: [61, 153, 112, 100],
+  Lemon: [255, 255, 0, 100],
+  Lime: [1, 255, 112, 100],
+  Mango: [255, 133, 27, 100],
+  Melon: [255, 215, 0, 100],
+  Nectarine: [255, 160, 122, 100],
+  Orange: [255, 165, 0, 100],
+  Papaya: [255, 140, 0, 100],
+  'Passion Fruit': [255, 105, 180, 100],
+  Peach: [255, 179, 71, 100],
+  Pear: [46, 139, 87, 100],
+  Pineapple: [255, 218, 185, 100],
+  Plum: [221, 160, 221, 100],
+  Pomegranate: [178, 34, 34, 100],
+  'Red Grapefruit': [255, 127, 80, 100],
+  Satsumas: [255, 99, 71, 100],
+  Juice: [100, 149, 237, 100],
+  Milk: [143, 188, 143, 100],
+  'Oat Milk': [204, 204, 204, 100],
+  Oatghurt: [0, 191, 255, 100],
+  'Sour Cream': [255, 20, 147, 100],
+  'Sour Milk': [75, 0, 130, 100],
+  Soyghurt: [123, 104, 238, 100],
+  'Soy Milk': [147, 112, 219, 100],
+  Yoghurt: [218, 112, 214, 100],
+  Asparagus: [0, 128, 0, 100],
+  Aubergine: [153, 50, 204, 100],
+  Cabbage: [0, 255, 127, 100],
+  Carrots: [255, 160, 122, 100],
+  Cucumber: [0, 255, 0, 100],
+  Garlic: [189, 183, 107, 100],
+  Ginger: [255, 69, 0, 100],
+  Leek: [173, 255, 47, 100],
+  Mushroom: [139, 0, 139, 100],
+  Onion: [255, 127, 80, 100],
+  Pepper: [255, 105, 180, 100],
+  Potato: [128, 0, 128, 100],
+  'Red Beet': [139, 0, 0, 100],
+  Tomato: [255, 99, 71, 100],
+  Zucchini: [0, 128, 128, 100],
+};
 
 // Target list
 let targets = [];
@@ -57,8 +102,11 @@ function setup() {
 function draw() {
   // The user is interacting with the 8x10 target grid
   if (draw_targets && attempt < 2) {
-    // Sets the background color (black by default)
-    background(new_background_color || color(0, 0, 0));
+    if (missed) {
+      background(35, 0, 0); // sets background to dark red on miss
+    } else {
+      background(0, 0, 0); // default background is black
+    }
 
     // Print trial count at the top left-corner of the canvas
     textFont('Arial', 16);
@@ -124,6 +172,7 @@ function createTargets(target_size, horizontal_gap, vertical_gap) {
       let target_label = labels.getString(labels_index, 0);
       let target_id = labels.getNum(labels_index, 1);
       let target_type = labels.getString(labels_index, 2);
+      let target_color = target_colors[target_type];
 
       let target = new Target(
         target_x,
@@ -131,7 +180,7 @@ function createTargets(target_size, horizontal_gap, vertical_gap) {
         target_size,
         target_label,
         target_id,
-        target_type
+        target_color
       );
       targets.push(target);
     }
@@ -151,12 +200,12 @@ function mousePressed() {
         if (targets[i].id === trials[current_trial]) {
           hit_sound.setVolume(0.2);
           hit_sound.play();
-          new_background_color = color(0, 25, 0);
+          missed = false;
           hits++;
         } else {
           miss_sound.setVolume(0.2);
           miss_sound.play();
-          new_background_color = color(25, 0, 0);
+          missed = true;
           misses++;
         }
 
@@ -264,6 +313,6 @@ function continueTest() {
   continue_button.remove();
 
   // Shows the targets again
-  new_background_color = color(0, 0, 0);
+  missed = false;
   draw_targets = true;
 }
