@@ -32,7 +32,8 @@ let hit_sound;
 let miss_sound;
 
 // Other variables
-let missed;
+let missed = false;
+// TODO: After defining groups we no longer need this
 let target_colors = {
   Apple: [255, 65, 54, 100],
   Avocado: [46, 204, 64, 100],
@@ -93,6 +94,8 @@ function preload() {
 function setup() {
   createCanvas(700, 500); // window size in px before we go into fullScreen()
   frameRate(60); // frame rate (DO NOT CHANGE!)
+
+  // TODO: Create the groups for the targets
 
   randomizeTrials(); // randomize the trial order at the start of execution
   drawUserIDScreen(); // draws the user start-up screen (student ID and display size)
@@ -174,6 +177,7 @@ function createTargets(target_size, horizontal_gap, vertical_gap) {
       let target_type = labels.getString(labels_index, 2);
       let target_color = target_colors[target_type];
 
+      // TODO: Adds the targets to the corresponding group
       let target = new Target(
         target_x,
         target_y + 40,

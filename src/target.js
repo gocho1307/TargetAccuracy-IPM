@@ -1,12 +1,13 @@
 // Target class: represents a target with label, position, dimensions, etc.
 class Target {
-  constructor(x, y, w, l, id, t, c) {
+  constructor(x, y, w, l, id, c, g) {
     this.x = x;
     this.y = y;
     this.width = w;
     this.label = l;
     this.id = id;
     this.color = c;
+    this.group = g;
     this.was_selected = false;
   }
 
