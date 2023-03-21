@@ -1,13 +1,10 @@
 // Target class: represents a target with label, position, dimensions, etc.
 class Target {
-  constructor(x, y, w, l, id, c, g) {
-    this.x = x;
-    this.y = y;
+  constructor(w, l, id, c) {
     this.width = w;
     this.label = l;
     this.id = id;
     this.color = c;
-    this.group = g;
     this.was_selected = false;
   }
 
@@ -24,6 +21,12 @@ class Target {
   // Resets the target information exclusive to the first attempt
   reset() {
     this.was_selected = false;
+  }
+
+  // Sets the position of the target
+  setPosition(target_x, target_y) {
+    this.x = target_x;
+    this.y = target_y;
   }
 
   // Draws the target (i.e., a circle)
@@ -48,7 +51,7 @@ class Target {
     textFont('Arial', 12);
     fill(color(255, 255, 255));
     textAlign(CENTER);
-    text(this.label, this.x, this.y + this.width / 2 + 10);
+    text(this.label, this.x, this.y);
     this.color[3] = 100;
   }
 }
