@@ -39,7 +39,7 @@ class Target {
     // Draw a selection if the target was selected
     if (this.was_selected) {
       stroke(color(150, 75));
-      strokeWeight(10);
+      strokeWeight(7);
     }
 
     // Draw target
@@ -48,9 +48,11 @@ class Target {
     noStroke();
 
     // Draw label
-    textFont('Arial', 12);
     fill(color(255, 255, 255));
     textAlign(CENTER);
+    textFont('Arial', 20);
+    text(this.label[0], this.x, this.y - 20);
+    textFont('Arial', 14);
     text(this.label, this.x, this.y);
     this.color[3] = 100;
   }

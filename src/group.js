@@ -59,10 +59,8 @@ class Group {
           break;
         }
 
-        let target_x =
-          this.x + group_margin + (group_separator + t_size) * c + t_size / 2;
-        let target_y =
-          this.y + group_margin + (group_separator + t_size) * r + t_size / 2;
+        let target_x = this.x + group_margin + (group_separator + t_size) * c + t_size / 2;
+        let target_y = this.y + group_margin + (group_separator + t_size) * r + t_size / 2;
 
         this.targets[c + this.n_width * r].setPosition(target_x, target_y);
       }

@@ -40,6 +40,12 @@ function drawUserIDScreen() {
     width / 2 - start_button.size().width / 2,
     height / 2 - start_button.size().height / 2
   );
+
+  // Adds a brief summary of the project features
+  fill(255);
+  textSize(18);
+  text('Please note that the targets are sorted by alphabetical order.', 10, 200);
+  text('Each group only has labels that start with the same letter.', 10, 225);
 }
 
 // Verifies if the student ID is a number, and within an acceptable range
