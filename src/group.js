@@ -20,7 +20,7 @@ class Group {
   }
 
   calculateSize() {
-    this.target_size = 1.875;
+    this.target_size = 1.6;
     this.separator_size = 10;
     if (this.targets.length >= 1 && this.targets.length <= 3) {
       this.width = this.target_size + 2 / this.separator_size;

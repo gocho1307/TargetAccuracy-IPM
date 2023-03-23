@@ -93,7 +93,13 @@ function randomizeTrials() {
   trials = []; // Empties the array
 
   // Creates an array with random items from the "labels" CSV
-  for (var i = 0; i < NUM_OF_TRIALS; i++) trials.push(round(random(labels.getRowCount())));
+  for (var i = 0; i < NUM_OF_TRIALS; i++) {
+    random_row = -1;
+    while (random_row < 0 || random_row >= labels.getRowCount()) {
+      random_row = round(random(labels.getRowCount()));
+    }
+    trials.push(random_row);
+  }
 
   // print("trial order: " + trials);   // prints trial order - for debug purposes
 }

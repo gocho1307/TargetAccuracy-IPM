@@ -10,8 +10,8 @@ const RECORD_TO_FIREBASE = false; // set to 'true' to record user results to Fir
 // Pixel density and setup variables (DO NOT CHANGE!)
 let PPI, PPCM;
 const NUM_OF_TRIALS = 12; // the numbers of trials (i.e., target selections) to be completed
-const GRID_ROWS = 3; // we divide our groups into a 3x7 grid (3 rows)
-const GRID_COLUMNS = 6; // we divide our groups in a 3x7 grid (6 columns)
+const GRID_ROWS = 3; // we divide our groups into a 3x6 grid (3 rows)
+const GRID_COLUMNS = 6; // we divide our groups in a 3x6 grid (6 columns)
 let continue_button;
 let labels; // the item list from the "labels" CSV
 
@@ -133,7 +133,7 @@ function createGroups(screen_width, screen_height) {
   created = true;
   // Below we find out out white space we can have between the groups of 2cm targets
   // 80 represent some margins around the display (e.g., for text)
-  let target_size = 1.875;
+  let target_size = 1.6;
   let t_size = target_size * PPCM; // sets the target size
 
   // Actually creates the targets
@@ -287,7 +287,7 @@ function printAndSavePerformance() {
     }
 
     // Add user performance results
-    let db_ref = database.ref('G' + GROUP_NUMBER);
+    let db_ref = database.ref(student_ID.toString());
     db_ref.push(attempt_data);
   }
 }
