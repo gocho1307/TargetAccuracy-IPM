@@ -20,28 +20,25 @@ class Group {
   }
 
   calculateSize() {
-    this.target_size = 1.6;
-    this.separator_size = 10;
     if (this.targets.length >= 1 && this.targets.length <= 3) {
-      this.width = this.target_size + 2 / this.separator_size;
+      this.width = target_size + 2 / separator_size;
       this.n_width = 1;
-      this.height =
-        (this.targets.length * 1) / this.separator_size + this.targets.length * this.target_size;
+      this.height = (this.targets.length * 1) / separator_size + this.targets.length * target_size;
       this.n_height = this.targets.length;
     } else if (this.targets.length > 3 && this.targets.length <= 6) {
-      this.width = 2 * this.target_size + 3 / this.separator_size;
+      this.width = 2 * target_size + 3 / separator_size;
       this.n_width = 2;
-      this.height = 3 * this.target_size + 4 / this.separator_size;
+      this.height = 3 * target_size + 4 / separator_size;
       this.n_height = 3;
     } else if (this.targets.length > 6 && this.targets.length <= 9) {
-      this.width = 3 * this.target_size + 4 / this.separator_size;
+      this.width = 3 * target_size + 4 / separator_size;
       this.n_width = 3;
-      this.height = 3 * this.target_size + 4 / this.separator_size;
+      this.height = 3 * target_size + 4 / separator_size;
       this.n_height = 3;
     } else if (this.targets.length > 9 && this.targets.length <= 12) {
-      this.width = 8 + 5 / this.separator_size;
+      this.width = 8 + 5 / separator_size;
       this.n_width = 4;
-      this.height = 3 * this.target_size + 4 / this.separator_size;
+      this.height = 3 * target_size + 4 / separator_size;
       this.n_height = 3;
     }
   }
@@ -49,9 +46,8 @@ class Group {
   setPosition(group_x, group_y) {
     this.x = group_x;
     this.y = group_y;
-    let group_margin = PPCM / this.separator_size;
-    let group_separator = PPCM / this.separator_size;
-    let t_size = this.target_size * PPCM;
+    let group_separator = PPCM / separator_size;
+    let t_size = target_size * PPCM;
 
     for (let r = 0; r < this.n_height; r++) {
       for (let c = 0; c < this.n_width; c++) {
@@ -59,8 +55,8 @@ class Group {
           break;
         }
 
-        let target_x = this.x + group_margin + (group_separator + t_size) * c + t_size / 2;
-        let target_y = this.y + group_margin + (group_separator + t_size) * r + t_size / 2;
+        let target_x = this.x + group_separator + (group_separator + t_size) * c + t_size / 2;
+        let target_y = this.y + group_separator + (group_separator + t_size) * r + t_size / 2;
 
         this.targets[c + this.n_width * r].setPosition(target_x, target_y);
       }

@@ -10,13 +10,13 @@ const RECORD_TO_FIREBASE = false; // set to 'true' to record user results to Fir
 // Pixel density and setup variables (DO NOT CHANGE!)
 let PPI, PPCM;
 const NUM_OF_TRIALS = 12; // the numbers of trials (i.e., target selections) to be completed
-const GRID_ROWS = 3; // we divide our groups into a 3x6 grid (3 rows)
-const GRID_COLUMNS = 6; // we divide our groups in a 3x6 grid (6 columns)
+const GRID_ROWS = 3; // we divide our groups into a quasi 3x6 grid (3 rows)
+const GRID_COLUMNS = 6; // we divide our groups in a quasi 3x6 grid (6 columns)
 let continue_button;
 let labels; // the item list from the "labels" CSV
 
 // Metrics
-let testStartTime, testEndTime; // time between the start and end of one attempt (8 trials)
+let testStartTime, testEndTime; // time between the start and end of one attempt (12 trials)
 let hits = 0; // number of successful selections
 let misses = 0; // number of missed selections (used to calculate accuracy)
 let database; // Firebase DB
@@ -38,6 +38,9 @@ let missed = false;
 // Targets and their Groups
 let targets = [];
 let groups = {};
+let target_size = 1.6;
+let separator_size = 10;
+let text_margin = 40; // 40 represents some margins around the display (e.g., for text)
 
 // Ensures important data is loaded before the program starts
 function preload() {
@@ -79,7 +82,7 @@ function setup() {
 
 // Runs every frame and redraws the screen
 function draw() {
-  // The user is interacting with the 8x10 target grid
+  // The user is interacting with the target grid
   if (draw_targets && attempt < 2) {
     if (missed) {
       background(15, 0, 0); // sets background to dark red on miss
@@ -131,9 +134,7 @@ function windowResized() {
 // Creates and positions the UI groups with targets
 function createGroups(screen_width, screen_height) {
   created = true;
-  // Below we find out out white space we can have between the groups of 2cm targets
-  // 80 represent some margins around the display (e.g., for text)
-  let target_size = 1.6;
+  // Redefines the target size to the current size after calculating the PPCM
   let t_size = target_size * PPCM; // sets the target size
 
   // Actually creates the targets
@@ -146,16 +147,18 @@ function createGroups(screen_width, screen_height) {
     groups[target_label[0]].addTarget(target);
   }
 
+  // Essentially makes the group organize their contents correctly
   for (let k in groups) {
     groups[k].sortTargets();
     groups[k].calculateSize();
   }
 
+  // Below we find out the white space we can have between the groups of 2cm targets
+
   // Defines the margins between groups by dividing the white space for
   // the number of groups minus one
-  let separator_size = 10;
   let vertical_gap =
-    (screen_height - (3 * target_size + 4 / separator_size) * GRID_ROWS) * PPCM - 40; // empty space in cm across the y-axis (based on 3 groups per column)
+    (screen_height - (3 * target_size + 4 / separator_size) * GRID_ROWS) * PPCM - text_margin; // empty space in cm across the y-axis (based on 3 groups per column)
   let v_margin = vertical_gap / (GRID_ROWS - 1);
   let group_fixed_height = (3 * target_size + 4 / separator_size) * PPCM;
 
@@ -170,7 +173,7 @@ function createGroups(screen_width, screen_height) {
     for (let c = 0; c < columns; c++) {
       groups_width += groups_t[c + GRID_COLUMNS * r].width;
     }
-    let horizontal_gap = (screen_width - groups_width) * PPCM - 40; // empty space in cm across the x-axis (based on 6 groups per row)
+    let horizontal_gap = (screen_width - groups_width) * PPCM - text_margin; // empty space in cm across the x-axis (based on 6 groups per row)
     let h_margin = horizontal_gap / (columns - 1);
 
     groups_width = 0;
@@ -190,7 +193,7 @@ function mousePressed() {
   // (i.e., during target selections)
   if (draw_targets) {
     for (let i = 0; i < labels.getRowCount(); i++) {
-      // Check if the user selected one of the targets
+      // Checks if the user selected one of the targets
       if (targets[i].isHovering(mouseX, mouseY)) {
         targets[i].select();
         // Checks if it was the correct target

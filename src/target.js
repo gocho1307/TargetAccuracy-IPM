@@ -29,25 +29,24 @@ class Target {
     this.y = target_y;
   }
 
-  // Draws the target (i.e., a circle)
-  // and its label
+  // Draws the target (i.e., a circle) and all of its information
   draw(mouse_x, mouse_y) {
-    // Change the alpha of the target when a mouse is hovering it
+    // Changes the alpha of the target when a mouse is hovering it
     if (this.isHovering(mouse_x, mouse_y)) {
       this.color[3] = 75;
     }
-    // Draw a selection if the target was selected
+    // Draws a selection if the target was selected
     if (this.was_selected) {
       stroke(color(150, 75));
       strokeWeight(7);
     }
 
-    // Draw target
+    // Draws the target
     fill(color(this.color));
     circle(this.x, this.y, this.width);
     noStroke();
 
-    // Draw label
+    // Draws the top letter and the label
     fill(color(255, 255, 255));
     textAlign(CENTER);
     textFont('Arial', 20);
