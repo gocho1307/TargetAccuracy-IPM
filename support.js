@@ -16,7 +16,7 @@ function drawUserIDScreen() {
   // 1. Student ID
   let student_ID_pos_y_offset = main_text.size().height + 40; // y offset from previous item
 
-  student_ID_form = createInput(''); // create input field
+  student_ID_form = createInput('103124'); // create input field
   student_ID_form.position(200, student_ID_pos_y_offset);
 
   student_ID_label = createDiv('Student number (int)'); // create label
@@ -26,7 +26,7 @@ function drawUserIDScreen() {
   // 2. Display size
   let display_size_pos_y_offset = student_ID_pos_y_offset + student_ID_form.size().height + 20;
 
-  display_size_form = createInput(''); // create input field
+  display_size_form = createInput('15'); // create input field
   display_size_form.position(200, display_size_pos_y_offset);
 
   display_size_label = createDiv('Display size in inches'); // create label
@@ -40,6 +40,12 @@ function drawUserIDScreen() {
     width / 2 - start_button.size().width / 2,
     height / 2 - start_button.size().height / 2
   );
+
+  // Adds a brief summary of the project features
+  fill(255);
+  textSize(18);
+  text('Please note that the targets are sorted by alphabetical order.', 10, 200);
+  text('Each group only has labels that start with the same letter.', 10, 225);
 }
 
 // Verifies if the student ID is a number, and within an acceptable range
@@ -87,7 +93,13 @@ function randomizeTrials() {
   trials = []; // Empties the array
 
   // Creates an array with random items from the "labels" CSV
-  for (var i = 0; i < NUM_OF_TRIALS; i++) trials.push(round(random(labels.getRowCount())));
+  for (var i = 0; i < NUM_OF_TRIALS; i++) {
+    random_row = -1;
+    while (random_row < 0 || random_row >= labels.getRowCount()) {
+      random_row = round(random(-1, labels.getRowCount()));
+    }
+    trials.push(random_row);
+  }
 
   // print("trial order: " + trials);   // prints trial order - for debug purposes
 }
