@@ -9,8 +9,10 @@ class Target {
   }
 
   // Checks if a mouse is hovering over the target
-  isHovering(mouse_x, mouse_y) {
-    return dist(this.x, this.y, mouse_x, mouse_y) < this.width / 2;
+  isHovering() {
+    let distance_x = abs(this.x - mouseX);
+    let distance_y = abs(this.y - mouseY);
+    return distance_x <= this.width / 2 && distance_y <= this.width / 2;
   }
 
   // Marks the target as selected by the user
@@ -30,9 +32,9 @@ class Target {
   }
 
   // Draws the target (i.e., a circle) and all of its information
-  draw(mouse_x, mouse_y) {
+  draw() {
     // Changes the alpha of the target when a mouse is hovering it
-    if (this.isHovering(mouse_x, mouse_y)) {
+    if (this.isHovering()) {
       this.color[3] = 75;
     }
     // Draws a selection if the target was selected
@@ -43,7 +45,9 @@ class Target {
 
     // Draws the target
     fill(color(this.color));
-    circle(this.x, this.y, this.width);
+    rectMode(CENTER);
+    rect(this.x, this.y, this.width, this.width);
+    rectMode(CORNER);
     noStroke();
 
     // Draws the top letter and the label

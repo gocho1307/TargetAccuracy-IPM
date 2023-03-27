@@ -5,10 +5,12 @@ class Group {
     this.color = c;
   }
 
+  // Adds a new target to the group
   addTarget(new_target) {
     this.targets.push(new_target);
   }
 
+  // Sorts all the targets in the group by alphabetical order
   sortTargets() {
     this.targets.sort((a, b) => {
       if (a.label < b.label) {
@@ -19,30 +21,21 @@ class Group {
     });
   }
 
+  // Calculates the width and height of the group dynamically
+  // according to the amount of targets
   calculateSize() {
-    if (this.targets.length >= 1 && this.targets.length <= 3) {
-      this.width = target_size + 2 / separator_size;
-      this.n_width = 1;
-      this.height = (this.targets.length * 1) / separator_size + this.targets.length * target_size;
+    this.n_width = ceil(this.targets.length / 3);
+    this.width = this.n_width * target_size + (this.n_width + 1) / separator_size;
+
+    if (this.targets.length >= 3) {
+      this.n_height = 3;
+    } else {
       this.n_height = this.targets.length;
-    } else if (this.targets.length > 3 && this.targets.length <= 6) {
-      this.width = 2 * target_size + 3 / separator_size;
-      this.n_width = 2;
-      this.height = 3 * target_size + 4 / separator_size;
-      this.n_height = 3;
-    } else if (this.targets.length > 6 && this.targets.length <= 9) {
-      this.width = 3 * target_size + 4 / separator_size;
-      this.n_width = 3;
-      this.height = 3 * target_size + 4 / separator_size;
-      this.n_height = 3;
-    } else if (this.targets.length > 9 && this.targets.length <= 12) {
-      this.width = 8 + 5 / separator_size;
-      this.n_width = 4;
-      this.height = 3 * target_size + 4 / separator_size;
-      this.n_height = 3;
     }
+    this.height = 3 * target_size + 4 / separator_size;
   }
 
+  // Sets the position of the group and all of its targets on the canvas
   setPosition(group_x, group_y) {
     this.x = group_x;
     this.y = group_y;
@@ -63,9 +56,10 @@ class Group {
     }
   }
 
-  draw(mouse_x, mouse_y) {
+  // Draws the group of targets
+  draw() {
     for (let i = 0; i < this.targets.length; i++) {
-      this.targets[i].draw(mouse_x, mouse_y);
+      this.targets[i].draw();
     }
   }
 }
