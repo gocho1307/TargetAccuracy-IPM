@@ -27,20 +27,19 @@ let trials; // contains the order of targets that activate in the test
 let current_trial = 0; // the current trial number (indexes into trials array above)
 let attempt = 0; // users complete each test twice to account for practice (attemps 0 and 1)
 
+// Targets and their Groups
+let targets = [];
+let groups = {};
+let target_size = 1.66;
+let separator_size = 8;
+let text_margin = 40; // 40 represents some margins around the display (e.g., for text)
+
 // Sound
 let hit_sound;
 let miss_sound;
 
 // Other variables
 let created = false;
-let missed = false;
-
-// Targets and their Groups
-let targets = [];
-let groups = {};
-let target_size = 1.6;
-let separator_size = 10;
-let text_margin = 40; // 40 represents some margins around the display (e.g., for text)
 
 // Ensures important data is loaded before the program starts
 function preload() {
@@ -84,11 +83,7 @@ function setup() {
 function draw() {
   // The user is interacting with the target grid
   if (draw_targets && attempt < 2) {
-    if (missed) {
-      background(15, 0, 0); // sets background to dark red on miss
-    } else {
-      background(0, 0, 0); // default background is black
-    }
+    background(0, 0, 0); // default background is black
 
     // Print trial count at the top left-corner of the canvas
     textFont('Arial', 16);
@@ -98,7 +93,7 @@ function draw() {
 
     // Draw all targets
     for (let k in groups) {
-      groups[k].draw(mouseX, mouseY);
+      groups[k].draw();
     }
 
     // Draw the target label to be selected in the current trial
@@ -121,9 +116,10 @@ function windowResized() {
     let screen_width = display.width * 2.54; // screen width
     let screen_height = display.height * 2.54; // screen height
 
-    // Creates the groups with targets
+    // Creates the groups with targets and positions them on the canvas
     if (!created) {
-      createGroups(screen_width, screen_height);
+      createGroups();
+      positionGroups(screen_width, screen_height);
     }
 
     // Starts drawing targets immediately after we go fullscreen
@@ -132,7 +128,7 @@ function windowResized() {
 }
 
 // Creates and positions the UI groups with targets
-function createGroups(screen_width, screen_height) {
+function createGroups() {
   created = true;
   // Redefines the target size to the current size after calculating the PPCM
   let t_size = target_size * PPCM; // sets the target size
@@ -147,14 +143,15 @@ function createGroups(screen_width, screen_height) {
     groups[target_label[0]].addTarget(target);
   }
 
-  // Essentially makes the group organize their contents correctly
+  // Essentially makes each group organize their contents correctly
   for (let k in groups) {
     groups[k].sortTargets();
     groups[k].calculateSize();
   }
+}
 
-  // Below we find out the white space we can have between the groups of 2cm targets
-
+// Positions each group of targets on the canvas according to their dimensions
+function positionGroups(screen_width, screen_height) {
   // Defines the margins between groups by dividing the white space for
   // the number of groups minus one
   let vertical_gap =
@@ -194,18 +191,16 @@ function mousePressed() {
   if (draw_targets) {
     for (let i = 0; i < labels.getRowCount(); i++) {
       // Checks if the user selected one of the targets
-      if (targets[i].isHovering(mouseX, mouseY)) {
+      if (targets[i].isHovering()) {
         targets[i].select();
         // Checks if it was the correct target
         if (targets[i].id === trials[current_trial]) {
           hit_sound.setVolume(0.2);
           hit_sound.play();
-          missed = false;
           hits++;
         } else {
           miss_sound.setVolume(0.2);
           miss_sound.play();
-          missed = true;
           misses++;
         }
 
@@ -313,6 +308,5 @@ function continueTest() {
   continue_button.remove();
 
   // Shows the targets again
-  missed = false;
   draw_targets = true;
 }
