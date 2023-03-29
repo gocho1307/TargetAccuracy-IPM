@@ -5,7 +5,7 @@
 
 // Database (CHANGE THESE!)
 const GROUP_NUMBER = 84; // add your group number here as an integer (e.g., 2, 3)
-const RECORD_TO_FIREBASE = true; // set to 'true' to record user results to Firebase
+const RECORD_TO_FIREBASE = false; // set to 'true' to record user results to Firebase
 
 // Pixel density and setup variables (DO NOT CHANGE!)
 let PPI, PPCM;
@@ -50,7 +50,7 @@ function preload() {
 
 // Runs once at the start
 function setup() {
-  createCanvas(700, 500); // window size in px before we go into fullScreen()
+  createCanvas(700, 600); // window size in px before we go into fullScreen()
   frameRate(60); // frame rate (DO NOT CHANGE!)
 
   groups = {
@@ -76,6 +76,7 @@ function setup() {
   };
 
   randomizeTrials(); // randomize the trial order at the start of execution
+  drawProTip(); // draws the pro tip section at the top of the screen
   drawUserIDScreen(); // draws the user start-up screen (student ID and display size)
 }
 
