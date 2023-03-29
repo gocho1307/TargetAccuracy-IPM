@@ -5,7 +5,7 @@
 
 // Database (CHANGE THESE!)
 const GROUP_NUMBER = 84; // add your group number here as an integer (e.g., 2, 3)
-const RECORD_TO_FIREBASE = false; // set to 'true' to record user results to Firebase
+const RECORD_TO_FIREBASE = true; // set to 'true' to record user results to Firebase
 
 // Pixel density and setup variables (DO NOT CHANGE!)
 let PPI, PPCM;
