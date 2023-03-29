@@ -3,18 +3,67 @@
 let student_ID_form, display_size_form, start_button; // Initial input variables
 let student_ID, display_size; // User input parameters
 
+// Prints the PRO TIP section at the top of the screen
+function drawProTip() {
+  background(color(0)); // sets the background to black
+
+  // 1. Places pro tip to memorize the positions and look around
+  fill(color(255));
+  textSize(17);
+  circle(15, 24, 10);
+  textStyle(BOLD);
+  text('PRO TIP', 25, 30);
+  textStyle(NORMAL);
+  text('You can look around freely before clicking anything.', 10, 65);
+  text('Here are the colors chosen for each group exactly as they appear on the screen:', 10, 89);
+
+  // 2. Places indicators of the colors for each letter
+  let x = 150;
+  let y = 139;
+  for (let k in groups) {
+    if (k == 'K' || k == 'R') {
+      x = 150;
+      y += 40;
+    }
+
+    // Simulates the target
+    fill(color(groups[k].color));
+    rectMode(CENTER);
+    rect(x, y, 34, 34);
+    rectMode(CORNER);
+
+    // Draws the letter
+    fill(color(255));
+    textAlign(CENTER);
+    textSize(20);
+    text(k, x, y + 7);
+
+    x += 40;
+  }
+
+  // 3. Explains the alphabetical order
+  fill(color(255));
+  textAlign(LEFT);
+  textSize(17);
+  text('Please note that the targets are sorted by alphabetical order.', 10, 290);
+  text('Each group only has labels that start with the same letter.', 10, 314);
+
+  // 4. Separates the PRO TIP section from the forms
+  stroke(color(255));
+  strokeWeight(1);
+  line(10, 339, 690, 340);
+}
+
 // Prints the initial UI that prompts that ask for student ID and screen size
 function drawUserIDScreen() {
-  background(color(0, 0, 0)); // sets background to black
-
   // Text prompt
   main_text = createDiv('Insert your student number and display size');
   main_text.id('main_text');
-  main_text.position(10, 10);
+  main_text.position(10, 365);
 
   // Input forms:
   // 1. Student ID
-  let student_ID_pos_y_offset = main_text.size().height + 40; // y offset from previous item
+  let student_ID_pos_y_offset = main_text.size().height + 400; // y offset from previous item
 
   student_ID_form = createInput('103124'); // create input field
   student_ID_form.position(200, student_ID_pos_y_offset);
@@ -38,14 +87,8 @@ function drawUserIDScreen() {
   start_button.mouseReleased(startTest);
   start_button.position(
     width / 2 - start_button.size().width / 2,
-    height / 2 - start_button.size().height / 2
+    height / 2 - start_button.size().height / 2 + 230
   );
-
-  // Adds a brief summary of the project features
-  fill(255);
-  textSize(18);
-  text('Please note that the targets are sorted by alphabetical order.', 10, 200);
-  text('Each group only has labels that start with the same letter.', 10, 225);
 }
 
 // Verifies if the student ID is a number, and within an acceptable range

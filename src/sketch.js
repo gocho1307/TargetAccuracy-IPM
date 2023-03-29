@@ -50,7 +50,7 @@ function preload() {
 
 // Runs once at the start
 function setup() {
-  createCanvas(700, 500); // window size in px before we go into fullScreen()
+  createCanvas(700, 600); // window size in px before we go into fullScreen()
   frameRate(60); // frame rate (DO NOT CHANGE!)
 
   groups = {
@@ -76,6 +76,7 @@ function setup() {
   };
 
   randomizeTrials(); // randomize the trial order at the start of execution
+  drawProTip(); // draws the pro tip section at the top of the screen
   drawUserIDScreen(); // draws the user start-up screen (student ID and display size)
 }
 
