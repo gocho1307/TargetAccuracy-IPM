@@ -137,8 +137,8 @@ function startTest() {
 function randomizeTrials() {
   trials = []; // Empties the array
 
-  // Creates an array with random items from the "labels" CSV
-  for (var i = 0; i < NUM_OF_TRIALS; i++) trials.push(floor(random(labels.getRowCount())));
+  // Creates an array with random items from the "legendas" CSV
+  for (var i = 0; i < NUM_OF_TRIALS; i++) trials.push(floor(random(legendas.getRowCount())));
 
   // print("trial order: " + trials);   // prints trial order - for debug purposes
 }

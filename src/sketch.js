@@ -13,7 +13,7 @@ const NUM_OF_TRIALS = 12; // the numbers of trials (i.e., target selections) to 
 const GRID_ROWS = 3; // we divide our groups into a quasi 3x6 grid (3 rows)
 const GRID_COLUMNS = 6; // we divide our groups in a quasi 3x6 grid (6 columns)
 let continue_button;
-let labels; // the item list from the "labels" CSV
+let legendas; // the item list from the "legendas" CSV
 
 // Metrics
 let testStartTime, testEndTime; // time between the start and end of one attempt (12 trials)
@@ -43,9 +43,7 @@ let created = false;
 
 // Ensures important data is loaded before the program starts
 function preload() {
-  labels = loadTable('./assets/labels.csv', 'csv', 'header');
-  hit_sound = loadSound('./assets/hit.wav');
-  miss_sound = loadSound('./assets/miss.wav');
+  legendas = loadTable('legendas.csv', 'csv', 'header');
 }
 
 // Runs once at the start
@@ -100,7 +98,7 @@ function draw() {
     // Draw the target label to be selected in the current trial
     textFont('Arial', 20);
     textAlign(CENTER);
-    text(labels.getString(trials[current_trial], 0), width / 2, height - 20);
+    text(legendas.getString(trials[current_trial], 0), width / 2, height - 20);
   }
 }
 
@@ -135,9 +133,9 @@ function createGroups() {
   let t_size = target_size * PPCM; // sets the target size
 
   // Actually creates the targets
-  for (let i = 0; i < labels.getRowCount(); i++) {
-    let target_label = labels.getString(i, 0);
-    let target_id = labels.getNum(i, 1);
+  for (let i = 0; i < legendas.getRowCount(); i++) {
+    let target_label = legendas.getString(i, 0);
+    let target_id = legendas.getNum(i, 1);
     let target_color = groups[target_label[0]].color;
     let target = new Target(t_size, target_label, target_id, target_color);
     targets.push(target);
@@ -190,18 +188,14 @@ function mousePressed() {
   // Only look for mouse releases during the actual test
   // (i.e., during target selections)
   if (draw_targets) {
-    for (let i = 0; i < labels.getRowCount(); i++) {
+    for (let i = 0; i < legendas.getRowCount(); i++) {
       // Checks if the user selected one of the targets
       if (targets[i].isHovering()) {
         targets[i].select();
         // Checks if it was the correct target
         if (targets[i].id === trials[current_trial]) {
-          hit_sound.setVolume(0.2);
-          hit_sound.play();
           hits++;
         } else {
-          miss_sound.setVolume(0.2);
-          miss_sound.play();
           misses++;
         }
 
@@ -286,7 +280,7 @@ function printAndSavePerformance() {
     }
 
     // Add user performance results
-    let db_ref = database.ref(student_ID.toString());
+    let db_ref = database.ref('G' + GROUP_NUMBER);
     db_ref.push(attempt_data);
   }
 }
@@ -301,7 +295,7 @@ function continueTest() {
   misses = 0;
 
   // Resets the targets information exclusive to the first attempt
-  for (let i = 0; i < labels.getRowCount(); i++) {
+  for (let i = 0; i < legendas.getRowCount(); i++) {
     targets[i].reset();
   }
 
