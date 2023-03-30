@@ -52,11 +52,15 @@ class Target {
 
     // Draws the top letter and the label
     fill(color(255, 255, 255));
-    textAlign(CENTER);
+    textAlign(CENTER, TOP);
     textFont('Arial', 20);
-    text(this.label[0], this.x, this.y - 20);
-    textFont('Arial', 14);
-    text(this.label, this.x, this.y);
+    textStyle(BOLD);
+    textWrap(WORD);
+    text(this.label[0], this.x, this.y - 25);
+    textStyle(NORMAL);
+    textFont('Arial', 15);
+    text(this.label, this.x - this.width / 2, this.y, this.width, this.width);
+    textAlign(CENTER, BASELINE);
     this.color[3] = 100;
   }
 }

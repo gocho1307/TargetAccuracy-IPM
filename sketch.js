@@ -30,7 +30,7 @@ let attempt = 0; // users complete each test twice to account for practice (atte
 // Targets and their Groups
 let targets = [];
 let groups = {};
-let target_size = 1.66;
+let target_size = 1.625;
 let separator_size = 8;
 let text_margin = 40; // 40 represents some margins around the display (e.g., for text)
 
