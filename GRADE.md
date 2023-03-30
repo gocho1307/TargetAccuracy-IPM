@@ -1,3 +1,0 @@
-- GRADE: /20.00
-- Design Process: /10.00
-- Average target selection time and success rate: /10.00
