@@ -18,6 +18,9 @@ function drawProTip() {
   text('Here are the colors chosen for each group exactly as they appear on the screen:', 10, 89);
 
   // 2. Places indicators of the colors for each letter
+  textAlign(CENTER);
+  textSize(20);
+  textStyle(BOLD);
   let x = 150;
   let y = 139;
   for (let k in groups) {
@@ -34,8 +37,6 @@ function drawProTip() {
 
     // Draws the letter
     fill(color(255));
-    textAlign(CENTER);
-    textSize(20);
     text(k, x, y + 7);
 
     x += 40;
@@ -45,6 +46,7 @@ function drawProTip() {
   fill(color(255));
   textAlign(LEFT);
   textSize(17);
+  textStyle(NORMAL);
   text('Please note that the targets are sorted by alphabetical order.', 10, 290);
   text('Each group only has labels that start with the same letter.', 10, 314);
 
